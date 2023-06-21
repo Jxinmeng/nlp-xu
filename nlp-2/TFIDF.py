@@ -42,11 +42,10 @@ def tfidf(counts, tf):
     return counts
 
 
-# 保存在文件中
 tfidf_en = tfidf(vocab_en, tf_en)
 tfidf_de = tfidf(vocab_de, tf_de)
 
-
+# 预测句子是英语还是德语
 def predict(s, dic_en, dic_de):
     de_sum = 0
     en_sum = 0
@@ -59,7 +58,7 @@ def predict(s, dic_en, dic_de):
         de_sum += dic_de[word]
     return en_sum, de_sum
 
-
+# 输入句子得到预测结果
 sentence = input()
 tmp = predict(sentence, tfidf_en, tfidf_de)
 print("en:\n", tmp[0])
