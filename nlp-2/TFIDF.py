@@ -41,14 +41,33 @@ def tfidf(counts, tf):
         counts[word] = tf[word] * idf[word]
     return counts
 
+
 # 保存在文件中
 tfidf_en = tfidf(vocab_en, tf_en)
 tfidf_de = tfidf(vocab_de, tf_de)
 
-with open("tfidf_en.txt","w",encoding="utf-8") as file:
-    for word, count in tfidf_en.items():
-        file.write("%s %lf\n" % (word, count))
 
-with open("tfidf_de.txt","w",encoding="utf-8") as file:
-    for word, count in tfidf_de.items():
-        file.write("%s %lf\n" % (word, count))
+def predict(s, dic_en, dic_de):
+    de_sum = 0
+    en_sum = 0
+    for word in s.split():
+        if word not in dic_en:
+            dic_en[word] = 0
+        if word not in dic_de:
+            dic_de[word] = 0
+        en_sum += dic_en[word]
+        de_sum += dic_de[word]
+    return en_sum, de_sum
+
+
+sentence = input()
+tmp = predict(sentence, tfidf_en, tfidf_de)
+print("en:\n", tmp[0])
+print("de:\n", tmp[1])
+if tmp[0] >= tmp[1]:
+    print("en")
+else:
+    print("de")
+
+# yesterday this was not the case : the light had barely turned green for pedestrians when a luxury vehicle sped through on a red light .
+# Sie prüfen derzeit , wie sie im Laufe der nächsten zehn Jahre zu einem System wechseln können , bei dem Fahrer pro gefahrener Meile bezahlen .
