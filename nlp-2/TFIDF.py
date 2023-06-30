@@ -45,18 +45,20 @@ def tfidf(counts, tf):
 tfidf_en = tfidf(vocab_en, tf_en)
 tfidf_de = tfidf(vocab_de, tf_de)
 
+
 # 预测句子是英语还是德语
 def predict(s, dic_en, dic_de):
     de_sum = 0
     en_sum = 0
     for word in s.split():
-        if word not in dic_en:
-            dic_en[word] = 0
-        if word not in dic_de:
-            dic_de[word] = 0
-        en_sum += dic_en[word]
-        de_sum += dic_de[word]
+        if word in dic_en:
+            en_sum += dic_en[word]
+        if word in dic_de:
+            de_sum += dic_de[word]
+        else:
+            pass
     return en_sum, de_sum
+
 
 # 输入句子得到预测结果
 sentence = input()
