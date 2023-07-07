@@ -1,4 +1,5 @@
 import random
+import math
 
 filename_en = "../dataset/newstest2016.tc.en"
 filename_de = "../dataset/newstest2016.tc.de"
@@ -33,33 +34,14 @@ vocab = vocab_en.union(vocab_de)
 def random_vocab(vocab1):
     random_en = {}
     random_de = {}
+    rang = math.sqrt(1 / len(vocab))
     for w in vocab1:
-        random_en[w] = random.random()
-        random_de[w] = random.random()
+        random_en[w] = random.uniform(-rang, rang)
+        random_de[w] = random.uniform(-rang, rang)
     return random_en, random_de
 
 
 w_en, w_de = random_vocab(vocab)
-
-
-# 根据loss函数，对于训练集中的每一条数据，调整模型参数
-def handle_loss(tmp, tag):
-    lr = 1e-3
-    tmp = tmp.split()
-    global w_en, w_de
-    score_en = sum(w_en[w] for w in tmp)
-    score_de = sum(w_de[w] for w in tmp)
-    if tag == "en":
-        if score_en < score_de:
-            for w in tmp:
-                w_en[w] += lr
-                w_de[w] -= lr
-    if tag == "de":
-        if score_de < score_en:
-            for w in tmp:
-                w_en[w] -= lr
-                w_de[w] += lr
-
 
 # 依次取文本中的一行，作为训练集中的一条数据，英语和德语交替读取
 def get_line(srcf, tag):
@@ -71,11 +53,30 @@ def get_line(srcf, tag):
             yield tmp, tag
 
 
+# 根据loss函数，对于训练集中的每一条数据，调整模型参数
+def handle_loss(tmp, tag):
+    lr = 1e-3
+    tmp = tmp.split()
+    global w_en, w_de
+    score_en = sum(w_en[w] for w in tmp)
+    score_de = sum(w_de[w] for w in tmp)
+    if tag == "en":
+        if score_en < score_de: # loss = max(0, score_de-score_en)
+            for w in tmp:
+                w_en[w] += lr
+                w_de[w] -= lr
+    if tag == "de":
+        if score_de < score_en:
+            for w in tmp:
+                w_en[w] -= lr
+                w_de[w] += lr
+
+
 # 均匀读取训练数据，得到模型参数
-def handle(scrf1, scrf2):
-    # 得到生成器，类似对象 line_en,line_de
-    get_en = get_line(scrf1, "en")
-    get_de = get_line(scrf2, "de")
+def handle(srcf1, srcf2):
+    # 得到生成器，get_en,get_de
+    get_en = get_line(srcf1, "en")
+    get_de = get_line(srcf2, "de")
     while True:
         try:
             tmp_en, tag_en = next(get_en)
