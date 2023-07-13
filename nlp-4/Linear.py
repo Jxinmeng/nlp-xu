@@ -1,4 +1,5 @@
 import torch
+from torch import nn
 from torch.autograd import Function
 
 
@@ -26,14 +27,14 @@ class LinearFunction(Function):
     def backward(ctx, grad_output):
         input, weight, bias = ctx.saved_tensors
         grad_input = grad_weight = grad_bias = None
-        # 需要计算输入的梯度
+        # 需要计算input的梯度
         if ctx.needs_input_grad[0]:
             grad_input = grad_output.mm(weight)
-        # 需要计算权重的梯度
+        # 需要计算weight的梯度
         if ctx.needs_input_grad[1]:
             # grad_output 转置后与输入矩阵 input 的矩阵乘法结果表示了反向传播的梯度传递
             grad_weight = grad_output.t().mm(input)
-        # 表示需要计算偏置的梯度，则执行 grad_output.sum(0) 计算偏置项的梯度，即对输出梯度进行求和
+        # 表示需要计算bias的梯度，则执行 grad_output.sum(0) 计算偏置项的梯度，即对输出梯度进行求和
         if bias is not None and ctx.needs_input_grad[2]:
             grad_bias = grad_output.sum(0)
 
@@ -47,3 +48,30 @@ linear = LinearFunction.apply
 def linear(input, weight, bias=None):
     return LinearFunction.apply(input, weight, bias)
 
+
+class Linear(nn.Module):
+    def __init__(self, input_features, output_features, bias=True):
+        super().__init__()
+        self.input_features = input_features
+        self.output_features = output_features
+        # 将张量转换为模块的可训练参数
+        self.weight = nn.Parameter(torch.empty(output_features, input_features))
+        if bias:
+            self.bias = nn.Parameter(torch.empty(output_features))
+        else:
+            self.register_parameter('bias', None)
+        # 将权重 weight 初始化为在范围 [-0.1, 0.1] 内均匀分布的值。如果 bias 为 True，则将偏置 bias 初始化为在范围 [-0.1, 0.1] 内均匀分布的值
+        nn.init.uniform_(self.weight, -0.1, 0.1)
+        if self.bias is not None:
+            nn.init.uniform_(self.bias, -0.1, 0.1)
+
+    def forward(self, input):
+        return torch.matmul(input, self.weight) + self.bias
+
+
+net_module = Linear(input_features=4,output_features=6)
+
+
+class SiLU(nn.Module):
+    def forward(self, input):
+        return input * torch.sigmoid(input)

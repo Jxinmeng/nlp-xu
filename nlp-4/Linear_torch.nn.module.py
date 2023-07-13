@@ -8,7 +8,7 @@ class Linear(nn.Module):
         super().__init__()
         self.input_features = input_features
         self.output_features = output_features
-        # 注册为模块的可训练参数
+        # 将张量转换为模块的可训练参数
         self.weight = nn.Parameter(torch.empty(output_features, input_features))
         if bias:
             self.bias = nn.Parameter(torch.empty(output_features))
@@ -20,9 +20,5 @@ class Linear(nn.Module):
             nn.init.uniform_(self.bias, -0.1, 0.1)
 
     def forward(self, input):
-        return LinearFunction.apply(input, self.weight, self.bias)
+        return torch.matmul(input, self.weight) + self.bias
 
-    def extra_repr(self):
-        return 'input_features={}, output_features={}, bias={}'.format(
-            self.input_features, self.output_features, self.bias is not None
-        )
