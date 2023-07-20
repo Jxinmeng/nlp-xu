@@ -60,9 +60,10 @@ def train(word_to_idx, data, optm, model, loss_f, my_device=None):
         optm.step()
         # 每1000个batch保存一次模型
         curb += 1
-        if curb % 1000 == 0:
-            torch.save(model.state_dict(), f'model_{curb}.pth')
-    torch.save(model.state_dict(), 'model_final.pth')
+        if curb % 10000 == 0:
+            file_path = f'D:\\nlp-x\\nlp-5\\model\\model_{curb}.pth'
+            torch.save(model.state_dict(), file_path)
+    torch.save(model.state_dict(), 'D:\\nlp-x\\nlp-5\\model\\model_final.pth')
 
 # 创建模型实例
 embedding_dim = 32
