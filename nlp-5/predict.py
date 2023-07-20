@@ -51,7 +51,7 @@ def decode_sequence(words,word_to_idx, model, max_len=50):
 
 
 # 给定的前三个词
-w1, w2, w3 = '台','湾','力'
+w1, w2, w3 = '我','们','再'
 words = [w1,w2,w3]
 
 model = LanguageModel(vocab_size, embedding_dim, hidden_dim, output_features)
