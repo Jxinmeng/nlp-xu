@@ -1,8 +1,5 @@
-import numpy as np
 import torch
 from model import LanguageModel
-import numpy as np
-from torch import nn
 
 filename = "D:\\nlp-x\\dataset\\news.2016.zh.shuffled.deduped"
 
