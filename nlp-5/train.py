@@ -26,7 +26,7 @@ def count_vocab(srcf):
 
 data, vocab, vocab_size = count_vocab(filename)
 
-# 构建词典
+# 构建字典
 word_to_idx = {word: idx for idx, word in enumerate(vocab)}
 
 
@@ -58,7 +58,7 @@ def train(word_to_idx, data, optm, model, loss_f, my_device=None):
         optm.zero_grad()
         loss.backward()
         optm.step()
-        # 每1000个batch保存一次模型
+        # 每10000个batch保存一次模型
         curb += 1
         if curb % 10000 == 0:
             file_path = f'D:\\nlp-x\\nlp-5\\model\\model_{curb}.pth'

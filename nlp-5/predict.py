@@ -30,7 +30,7 @@ word_to_idx = {word: idx for idx, word in enumerate(vocab)}
 
 # 定义解码函数
 def decode_sequence(words,word_to_idx, model, max_len=50):
-    # 从索引到词语
+    # 从索引到词语的字典
     idx_to_word = {word: idx for idx, word in word_to_idx.items()}
     result = []
     result.extend(words)
@@ -42,8 +42,8 @@ def decode_sequence(words,word_to_idx, model, max_len=50):
         out = model(input_)
         # 获取概率最大的词的索引
         next_word_index = torch.argmax(out).item()
-        # 将索引转换为词语
-        next_word = idx_to_word.get(next_word_index + 1, "<UNK>")  # 将索引转换为词语
+        # 将索引转换为字
+        next_word = idx_to_word.get(next_word_index + 1, "<UNK>")  # 将索引转换为字
         # 添加预测的词到输出序列中
         result.append(next_word)
     output = "".join(result)
@@ -53,7 +53,7 @@ def decode_sequence(words,word_to_idx, model, max_len=50):
 # 给定的前三个词
 w1, w2, w3 = '我','们','再'
 words = [w1,w2,w3]
-
+# 构建一个和训练相同的模型
 model = LanguageModel(vocab_size, embedding_dim, hidden_dim, output_features)
 # 加载训练好的模型参数
 model.load_state_dict(torch.load('D:\\nlp-x\\nlp-5\\model\\model_final.pth'))
