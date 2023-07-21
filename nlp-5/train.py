@@ -3,9 +3,10 @@ import torch.nn as nn
 import torch.optim as optim
 from model import LanguageModel
 import numpy as np
+import pickle
 
-filename = "D:\\nlp-x\\dataset\\news.2016.zh.shuffled.deduped"
-
+filename = "D:/nlp-x/dataset/news.2016.zh.shuffled.deduped"
+file_path = "D:/nlp-x/nlp-5/word_to_idx.pkl"
 
 # 计算文件中字的个数
 def count_vocab(srcf):
@@ -23,12 +24,15 @@ def count_vocab(srcf):
     vocab_size = len(vocab)
     return data, vocab, vocab_size
 
-
 data, vocab, vocab_size = count_vocab(filename)
 
 # 构建字典
 word_to_idx = {word: idx for idx, word in enumerate(vocab)}
 
+
+# 使用 pickle 将字典保存到文件中
+with open(file_path, 'wb') as file:
+    pickle.dump(word_to_idx, file)
 
 # 训练模型
 def train(word_to_idx, data, optm, model, loss_f, my_device=None):
@@ -61,9 +65,8 @@ def train(word_to_idx, data, optm, model, loss_f, my_device=None):
         # 每10000个batch保存一次模型
         curb += 1
         if curb % 10000 == 0:
-            file_path = f'D:\\nlp-x\\nlp-5\\model\\model_{curb}.pth'
+            file_path = 'D:/nlp-x/nlp-5/model/model_final.pth'
             torch.save(model.state_dict(), file_path)
-    torch.save(model.state_dict(), 'D:\\nlp-x\\nlp-5\\model\\model_final.pth')
 
 # 创建模型实例
 embedding_dim = 32
@@ -88,4 +91,5 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = model.to(device)
 loss_function = loss_function.to(device)
 
-train(word_to_idx, data, optimizer, model, loss_function, device)
+for epoch in range(20):
+    train(word_to_idx, data, optimizer, model, loss_function, device)

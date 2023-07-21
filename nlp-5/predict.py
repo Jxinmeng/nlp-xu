@@ -1,36 +1,23 @@
 import torch
 from model import LanguageModel
+import pickle
 
-filename = "D:\\nlp-x\\dataset\\news.2016.zh.shuffled.deduped"
+file_path = "D:/nlp-x/nlp-5/word_to_idx.pkl"
 
 embedding_dim = 32
 hidden_dim = 128
 output_features = 32
 
-def count_vocab(srcf):
-    vocab = set()
-    data = []
-    # 读取数据文件
-    with open(srcf, "r", encoding="utf-8") as f:
-        for line in f:
-            tmp = line.strip()
-            data.append(tmp)
-            if tmp:
-                for word in tmp:
-                    if word not in vocab:
-                        vocab.add(word)
-    vocab_size = len(vocab)
-    return data, vocab, vocab_size
 
+# 使用 pickle 从文件中加载字典
+with open(file_path, 'rb') as file:
+    word_to_idx = pickle.load(file)
 
-data, vocab, vocab_size = count_vocab(filename)
-
-word_to_idx = {word: idx for idx, word in enumerate(vocab)}
-
+vocab_size = len(word_to_idx)
 
 # 定义解码函数
 def decode_sequence(words,word_to_idx, model, max_len=50):
-    # 从索引到词语的字典
+    # 从索引到词语
     idx_to_word = {word: idx for idx, word in word_to_idx.items()}
     result = []
     result.extend(words)
@@ -42,8 +29,8 @@ def decode_sequence(words,word_to_idx, model, max_len=50):
         out = model(input_)
         # 获取概率最大的词的索引
         next_word_index = torch.argmax(out).item()
-        # 将索引转换为字
-        next_word = idx_to_word.get(next_word_index + 1, "<UNK>")  # 将索引转换为字
+        # 将索引转换为词语
+        next_word = idx_to_word.get(next_word_index, "<UNK>")  # 将索引转换为词语
         # 添加预测的词到输出序列中
         result.append(next_word)
     output = "".join(result)
@@ -51,11 +38,11 @@ def decode_sequence(words,word_to_idx, model, max_len=50):
 
 
 # 给定的前三个词
-w1, w2, w3 = '我','们','再'
+w1, w2, w3 = '台','湾','力'
 words = [w1,w2,w3]
-# 构建一个和训练相同的模型
+
 model = LanguageModel(vocab_size, embedding_dim, hidden_dim, output_features)
 # 加载训练好的模型参数
-model.load_state_dict(torch.load('D:\\nlp-x\\nlp-5\\model\\model_final.pth'))
+model.load_state_dict(torch.load('D:/nlp-x/nlp-5/model/model_final.pth'))
 output = decode_sequence(words,word_to_idx,model)
 print(output)
