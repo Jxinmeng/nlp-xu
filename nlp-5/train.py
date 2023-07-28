@@ -93,3 +93,4 @@ loss_function = loss_function.to(device)
 
 for epoch in range(20):
     train(word_to_idx, data, optimizer, model, loss_function, device)
+    print("epoch:",epoch,"loss:",loss_function)
