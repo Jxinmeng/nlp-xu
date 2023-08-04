@@ -10,8 +10,7 @@ class LanguageModel(nn.Module):
             nn.Linear(3 * embedding_dim, hidden_dim),
             nn.GELU(),
             nn.Linear(hidden_dim, output_features, bias=False),
-            nn.Linear(output_features, vocab_size),
-            nn.LogSoftmax(dim=1)
+            nn.Linear(output_features, vocab_size)
         )
 
     def forward(self, input):

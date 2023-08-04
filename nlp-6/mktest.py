@@ -66,10 +66,10 @@ def save_hdf5_file(filename, data, word_dict_size):
         file.create_dataset("ndata", data=[idx+1])
         file.create_dataset("nword", data=[word_dict_size])
         # 查看src_group中的数据集
-        # for name, member in src_group.items():
-        #     print(f"成员名称: {name}")
-        #     print(f"成员值: {member[()]}")
-        #     print("---")
+        for name, member in src_group.items():
+            print(f"成员名称: {name}")
+            print(f"成员值: {member[()]}")
+            print("---")
 
 
 tensor_data = handle(filename1, word_to_idx, m_token=2560)
