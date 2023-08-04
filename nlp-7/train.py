@@ -25,9 +25,9 @@ with h5py.File(filename, "r") as file:
 def train(filename, optm, model, loss_f, my_device=None):
     with h5py.File(filename, "r") as file:
         batch = file['ndata'][0]  # batch数量
-        batch_indices = list(range(batch))
-        shuffle(batch_indices)
         for i in range(epoch):
+            batch_indices = list(range(batch))
+            shuffle(batch_indices)
             for t in tqdm(batch_indices):
                 # 取每个batch的数据
                 seq_batch = torch.from_numpy(file["src"][str(t)][()])
