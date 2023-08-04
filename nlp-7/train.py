@@ -1,3 +1,4 @@
+from random import shuffle
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -6,9 +7,9 @@ from LSTM import LSTMmodel
 import h5py
 from tqdm import tqdm
 
-
 filename = "D:/nlp-x/dataset/tensorfile.hdf5"
 file_path = "D:/nlp-x/nlp-7/model/model_final.pth"
+
 
 input_size = 32
 hidden_size = 128
@@ -24,14 +25,14 @@ with h5py.File(filename, "r") as file:
 def train(filename, optm, model, loss_f, my_device=None):
     with h5py.File(filename, "r") as file:
         batch = file['ndata'][0]  # batch数量
+        batch_indices = list(range(batch))
+        shuffle(batch_indices)
         for i in range(epoch):
-            for t in tqdm(range(batch)):
+            for t in tqdm(batch_indices):
                 # 取每个batch的数据
                 seq_batch = torch.from_numpy(file["src"][str(t)][()])
-                # 取出除去最后一个词之外的全部词
-                input_ = seq_batch[:, :-1]
-                # 取出除去第一个词之外的全部词
-                target = seq_batch[:, 1:]
+                input_ = seq_batch[:, :-1]  # 取出除去最后一个词之外的全部词
+                target = seq_batch[:, 1:]  # 取出除去第一个词之外的全部词
                 if my_device:
                     input_, target = input_.to(my_device), target.to(my_device)
                 # 前向传播
@@ -47,7 +48,6 @@ def train(filename, optm, model, loss_f, my_device=None):
 
 
 model = LSTMmodel(input_size, hidden_size, dropout_rate, vocab_size + 1)
-# model = RNNmodel(input_size, hidden_size, dropout_rate, vocab_size + 1)
 
 # 设置随机种子
 torch.manual_seed(0)
